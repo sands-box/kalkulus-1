@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulus Interaktif</title>
+    <title>Kalkulus Interaktif Pro</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,11 +13,11 @@
 
     <header>
         <div class="container">
-            <h1>Kalkulus Interaktif 📐</h1>
+            <h1>Kalkulus Interaktif Pro 🚀</h1>
             <nav>
                 <a href="#home" class="nav-link active">Beranda</a>
                 <a href="#materi" class="nav-link">Materi</a>
-                <a href="#simulasi" class="nav-link">Simulasi Grafik</a>
+                <a href="#simulasi" class="nav-link">Simulasi Visual</a>
                 <a href="#kalkulator" class="nav-link">Kalkulator</a>
                 <a href="#latihan" class="nav-link">Latihan Soal</a>
                 <a href="#tentang" class="nav-link">Tentang</a>
@@ -27,80 +27,65 @@
 
     <main class="container">
         <section id="home" class="page active">
-            <h2>Selamat Datang di Kalkulus Interaktif!</h2>
-            <p>Sebuah media pembelajaran berbasis web untuk membantu Anda memahami konsep-konsep dasar kalkulus secara visual dan interaktif. Jelajahi materi, coba simulasi grafik, dan uji pemahaman Anda dengan latihan soal.</p>
+            <h2>Selamat Datang di Versi Pro!</h2>
+            <p>Kini dengan fitur yang lebih canggih: materi aplikasi kalkulus, kalkulator lengkap, dan simulasi visual yang lebih interaktif untuk memperdalam pemahaman Anda.</p>
             <div class="features-grid">
-                <div class="feature-card">Materi Ringkas & Mudah Dipahami</div>
-                <div class="feature-card">Visualisasi Grafik Interaktif</div>
-                <div class="feature-card">Kalkulator Turunan & Integral</div>
-                <div class="feature-card">Latihan Soal dengan Feedback</div>
+                <div class="feature-card">Materi Aplikasi Kalkulus</div>
+                <div class="feature-card">Plot Dua Fungsi Sekaligus</div>
+                <div class="feature-card">Kalkulator Limit & Integral</div>
+                <div class="feature-card">Deteksi Titik Kritis Otomatis</div>
             </div>
         </section>
 
         <section id="materi" class="page">
             <h2>Materi Kalkulus</h2>
             <article>
-                <h3>1. Limit</h3>
-                <p>Konsep limit adalah dasar dari kalkulus. Limit sebuah fungsi $f(x)$ saat $x$ mendekati suatu titik $c$ adalah nilai yang "didekati" oleh $f(x)$ ketika $x$ semakin dekat dengan $c$. Ditulis sebagai:</p>
-                $$ \lim_{x \to c} f(x) = L $$
-                <p>Ini berarti nilai $f(x)$ bisa dibuat sedekat mungkin dengan $L$ dengan cara memilih nilai $x$ yang cukup dekat dengan $c$.</p>
+                <h3>1. Limit, Turunan, dan Integral (Dasar)</h3>
+                <p>Dasar-dasar kalkulus mencakup studi tentang limit, turunan (laju perubahan), dan integral (akumulasi/luas). Konsep-konsep ini saling berhubungan dan menjadi fondasi untuk topik yang lebih lanjut.</p>
             </article>
-            <article>
-                <h3>2. Turunan (Diferensial)</h3>
-                <p>Turunan dari sebuah fungsi, dinotasikan sebagai $f'(x)$ atau $\frac{dy}{dx}$, mengukur laju perubahan sesaat dari fungsi tersebut. Secara geometris, turunan di suatu titik adalah kemiringan (gradien) dari garis singgung kurva di titik tersebut.</p>
-                <p>Definisi formal turunan menggunakan limit:</p>
-                $$ f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h} $$
-                <p>Contoh: Jika $f(x) = x^2$, maka turunannya adalah $f'(x) = 2x$.</p>
+            <article class="new-concept">
+                <h3>2. Aplikasi Turunan: Nilai Ekstrem</h3>
+                <p>Salah satu aplikasi turunan yang paling kuat adalah untuk menemukan titik **maksimum** dan **minimum** (nilai ekstrem) dari sebuah fungsi. Ini dilakukan dengan mencari **titik kritis**, yaitu titik di mana turunan pertama fungsi ($f'(x)$) bernilai nol atau tidak terdefinisi.</p>
+                <p>Jika $f'(c) = 0$, maka $x=c$ adalah kandidat untuk titik maksimum lokal atau minimum lokal.</p>
             </article>
-             <article>
-                <h3>3. Integral</h3>
-                <p>Integral adalah kebalikan dari turunan (antiturunan) dan juga dapat diartikan sebagai luas daerah di bawah kurva. Integral tak tentu dari $f(x)$ ditulis sebagai:</p>
-                $$ \int f(x) \,dx = F(x) + C $$
-                <p>Di mana $F'(x) = f(x)$ dan $C$ adalah konstanta integrasi.</p>
+             <article class="new-concept">
+                <h3>3. Aplikasi Integral: Luas Antara Dua Kurva</h3>
+                <p>Jika kita memiliki dua fungsi, $f(x)$ dan $g(x)$, di mana $f(x) \ge g(x)$ pada interval $[a, b]$, maka luas daerah yang dibatasi oleh kedua kurva tersebut dapat dihitung dengan integral tentu:</p>
+                $$ A = \int_{a}^{b} [f(x) - g(x)] \,dx $$
+                <p>Ini secara efektif menghitung "luas kurva atas" dikurangi "luas kurva bawah".</p>
             </article>
         </section>
 
         <section id="simulasi" class="page">
-            <h2>Simulasi Kalkulus Interaktif</h2>
-            <p>Pilih jenis visualisasi, masukkan fungsi dan parameter yang dibutuhkan, lalu tekan "Visualisasikan".</p>
-
+            <h2>Simulasi Visual Tingkat Lanjut</h2>
+            <p>Masukkan satu atau dua fungsi. Pilih visualisasi untuk melihat analisis grafik secara otomatis.</p>
             <div class="simulation-controls">
                 <div class="control-group">
                     <label for="sim-function-input">Fungsi $f(x) = $</label>
-                    <input type="text" id="sim-function-input" value="x^2" placeholder="Contoh: x^3 - 2*x">
+                    <input type="text" id="sim-function-input" value="x^3 - 3*x" placeholder="Fungsi utama">
                 </div>
-
+                 <div class="control-group">
+                    <label for="sim-function-g-input">Fungsi $g(x) = $</label>
+                    <input type="text" id="sim-function-g-input" value="x" placeholder="Fungsi kedua (opsional)">
+                </div>
                 <div class="control-group">
                     <label>Pilih Visualisasi:</label>
                     <select id="visualization-type">
-                        <option value="grafik" selected>Grafik Fungsi</option>
-                        <option value="turunan">Turunan (Garis Singgung)</option>
-                        <option value="integral">Integral (Area di Bawah Kurva)</option>
-                        <option value="limit">Limit</option>
+                        <option value="grafik" selected>Grafik Standar</option>
+                        <option value="kritis">Analisis Titik Kritis (f(x))</option>
+                        <option value="integral">Integral (Area f(x))</option>
+                        <option value="luas-kurva">Luas Antara Dua Kurva</option>
                     </select>
                 </div>
-
-                <div id="contextual-inputs">
-                    <div id="turunan-inputs" class="context-group">
-                        <label for="turunan-point">Titik $x = $</label>
-                        <input type="number" id="turunan-point" value="1" step="0.1">
-                        <input type="range" id="turunan-slider" min="-10" max="10" value="1" step="0.1" class="slider">
-                    </div>
-                    <div id="integral-inputs" class="context-group">
-                        <label>Batas Bawah $a = $</label>
-                        <input type="number" id="integral-a" value="-1">
-                        <label>Batas Atas $b = $</label>
-                        <input type="number" id="integral-b" value="2">
-                    </div>
-                    <div id="limit-inputs" class="context-group">
-                        <label>Titik $x \to $</label>
-                        <input type="number" id="limit-c" value="2">
-                    </div>
+                <div id="integral-inputs" class="context-group">
+                    <label>Batas $a=$</label> <input type="number" id="integral-a" value="-2">
+                    <label>$b=$</label> <input type="number" id="integral-b" value="2">
                 </div>
-                
-                <button id="visualize-button">Visualisasikan!</button>
+                <div>
+                    <button id="visualize-button">Visualisasikan</button>
+                    <button id="reset-view-button" class="secondary">Reset View</button>
+                </div>
             </div>
-
             <div class="simulation-output">
                 <div id="plot-target"></div>
                 <div id="visualization-info"></div>
@@ -108,47 +93,56 @@
         </section>
 
         <section id="kalkulator" class="page">
-            <h2>Kalkulator Kalkulus Mini</h2>
-            <p>Hitung turunan dari fungsi yang Anda masukkan.</p>
+            <h2>Kalkulator Kalkulus Lengkap</h2>
             <div class="calculator-form">
-                <label for="calc-function-input">Masukkan Fungsi $f(x)$:</label>
-                <input type="text" id="calc-function-input" placeholder="Contoh: x^3 + 2*x^2 - 5">
-                <button id="calculate-derivative-button">Hitung Turunan</button>
+                <div class="control-group">
+                    <label for="calc-function-input">Masukkan Fungsi $f(x)$:</label>
+                    <input type="text" id="calc-function-input" placeholder="Contoh: sin(x) / x">
+                </div>
+                <div class="control-group">
+                    <label>Pilih Operasi:</label>
+                    <select id="calc-operation">
+                        <option value="turunan">Turunan</option>
+                        <option value="integral">Integral Tentu</option>
+                        <option value="limit">Limit</option>
+                    </select>
+                </div>
+                <div id="calc-extra-inputs">
+                    <div id="calc-integral-inputs" class="context-group">
+                        <label>Batas Bawah $a=$</label><input type="text" id="calc-integral-a" value="0">
+                        <label>Batas Atas $b=$</label><input type="text" id="calc-integral-b" value="pi">
+                    </div>
+                     <div id="calc-limit-inputs" class="context-group">
+                        <label>Mendekati $x \to$</label><input type="text" id="calc-limit-c" value="0">
+                    </div>
+                </div>
+                <button id="calculate-button">Hitung</button>
             </div>
             <div id="calc-output">
-                <h3>Hasil:</h3>
-                <p id="result-text">Hasil perhitungan akan muncul di sini.</p>
+                <h3>Hasil Perhitungan:</h3>
+                <p id="result-text">Hasil akan muncul di sini.</p>
             </div>
         </section>
-
+        
         <section id="latihan" class="page">
-            <h2>Latihan Soal Interaktif</h2>
+             <h2>Latihan Soal Interaktif</h2>
             <div id="quiz-container"></div>
             <button id="submit-quiz-button">Kumpulkan Jawaban</button>
             <div id="quiz-result"></div>
         </section>
-        
         <section id="tentang" class="page">
             <h2>Tentang Project</h2>
-            <p>Project "Kalkulus Interaktif" ini dibuat sebagai media pembelajaran modern untuk mata kuliah Kalkulus. Tujuannya adalah untuk memvisualisasikan konsep-konsep abstrak agar lebih mudah dipahami oleh mahasiswa dan siapa saja yang tertarik belajar kalkulus.</p>
-            <p><strong>Teknologi yang Digunakan:</strong> HTML, CSS, JavaScript, MathJax, function-plot.js, dan math.js.</p>
+            <p>Project "Kalkulus Interaktif Pro" dikembangkan lebih lanjut untuk menyediakan alat bantu belajar kalkulus yang lebih mendalam, akurat, dan interaktif.</p>
+            <p><strong>Teknologi:</strong> HTML, CSS, JavaScript (ES6+), MathJax, function-plot.js, dan math.js.</p>
         </section>
     </main>
 
     <script src="https://unpkg.com/mathjs@11.8.0/lib/browser/math.js"></script>
     <script src="https://unpkg.com/function-plot@1.22.9/dist/function-plot.js"></script>
     <script>
-        MathJax = {
-          tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']]
-          },
-          svg: {
-            fontCache: 'global'
-          }
-        };
+        MathJax = { tex: { inlineMath: [['$', '$']] }, svg: { fontCache: 'global' } };
     </script>
-    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-
-    <script src="js/script.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
