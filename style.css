@@ -1,0 +1,250 @@
+/* General Styling */
+:root {
+    --primary-color: #005A9C;
+    --secondary-color: #00A9E0;
+    --background-color: #f4f7f9;
+    --text-color: #333;
+    --card-bg: #ffffff;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header & Navigation */
+header {
+    background-color: var(--card-bg);
+    box-shadow: var(--box-shadow);
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    font-size: 1.8em;
+    margin: 0;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav a:hover, nav a.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Page Content */
+main .page {
+    display: none; /* Sembunyikan semua halaman secara default */
+    background-color: var(--card-bg);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-top: 20px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+main .page.active {
+    display: block; /* Tampilkan halaman yang aktif */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Home Page Specifics */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.feature-card {
+    background-color: var(--background-color);
+    padding: 20px;
+    text-align: center;
+    border-radius: var(--border-radius);
+    border-left: 5px solid var(--secondary-color);
+    font-weight: 500;
+}
+
+/* Materi Page */
+article {
+    margin-bottom: 25px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+/* Input, Buttons & Forms */
+input[type="text"] {
+    width: 250px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 10px;
+}
+
+button:hover {
+    background-color: var(--primary-color);
+}
+
+/* Simulasi & Kalkulator */
+.plot-controls, .calculator-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#plot-target, #calc-output {
+    margin-top: 20px;
+}
+
+#calc-output {
+    background-color: #eef7ff;
+    border-left: 5px solid var(--primary-color);
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 1.1em;
+    min-height: 50px;
+}
+
+/* Latihan Soal / Quiz */
+.quiz-question {
+    margin-bottom: 20px;
+}
+
+.quiz-question p {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.quiz-options label {
+    display: block;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+#quiz-result {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.correct { color: #28a745; }
+.incorrect { color: #dc3545; }
+
+/* --- Styling untuk Simulasi Interaktif Baru --- */
+
+.simulation-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+    background-color: var(--background-color);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.control-group label {
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+input[type="number"], select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 0.95em;
+}
+
+#sim-function-input {
+    width: 200px;
+}
+
+/* Sembunyikan input kontekstual secara default */
+.context-group {
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+
+#visualize-button {
+    align-self: flex-end; /* Posisikan tombol di bawah */
+    background-color: var(--primary-color);
+}
+#visualize-button:hover {
+    background-color: #004175;
+}
+
+.simulation-output {
+    margin-top: 20px;
+}
+
+#visualization-info {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #eef7ff;
+    border-left: 5px solid var(--secondary-color);
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-family: 'Montserrat', sans-serif;
+    min-height: 24px;
+}
+
+.slider {
+    width: 150px;
+}
