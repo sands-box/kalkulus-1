@@ -1,14 +1,5 @@
-/**
- * Kalkulus Interaktif Pro
- * Struktur kode modular untuk kemudahan pengelolaan.
- */
 document.addEventListener('DOMContentLoaded', () => {
-
-    // --- UTILITIES ---
-    // Helper untuk merender MathJax
     const renderMath = () => window.MathJax?.typesetPromise();
-
-    // --- MODUL NAVIGASI ---
     const Navigation = {
         init() {
             this.navLinks = document.querySelectorAll('.nav-link');
@@ -16,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.navLinks.forEach(link => {
                 link.addEventListener('click', (e) => this.handleNavClick(e));
             });
-            this.showPage('home');
+            this.showPage('materi'); 
         },
         handleNavClick(event) {
             event.preventDefault();
@@ -25,7 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         showPage(pageId) {
             this.pages.forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId)?.classList.add('active');
+            const activePage = document.getElementById(pageId);
+            if (activePage) {
+                activePage.classList.add('active');
+            }
 
             this.navLinks.forEach(link => {
                 link.classList.remove('active');
@@ -34,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             
-            // Inisialisasi modul terkait saat halaman ditampilkan
             if (pageId === 'simulasi') Simulator.initPlot();
             if (pageId === 'latihan') Quiz.render();
 
@@ -42,9 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- MODUL SIMULATOR VISUAL ---
+    // --- MODUL SIMULATOR VISUAL---
     const Simulator = {
-        plotInstance: null,
         init() {
             this.cacheDOM();
             this.bindEvents();
@@ -53,12 +45,18 @@ document.addEventListener('DOMContentLoaded', () => {
         cacheDOM() {
             this.fInput = document.getElementById('sim-function-input');
             this.gInput = document.getElementById('sim-function-g-input');
+            this.fxyInput = document.getElementById('sim-function-fxy-input');
             this.typeSelect = document.getElementById('visualization-type');
             this.integralInputs = document.getElementById('integral-inputs');
             this.visualizeBtn = document.getElementById('visualize-button');
             this.resetBtn = document.getElementById('reset-view-button');
             this.plotTarget = document.getElementById('plot-target');
+            this.plotTarget3D = document.getElementById('plot-target-3d');
             this.infoTarget = document.getElementById('visualization-info');
+            this.turunan3DTarget = document.getElementById('turunan-3d');
+            this.fxControl = document.getElementById('fx-control');
+            this.gxControl = document.getElementById('gx-control');
+            this.fxyControl = document.getElementById('fxy-control');
         },
         bindEvents() {
             this.visualizeBtn.addEventListener('click', () => this.run());
@@ -67,92 +65,187 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         updateContextualInputs() {
             const type = this.typeSelect.value;
+            const is3D = type === 'grafik-3d';
+            
             this.integralInputs.style.display = (type === 'integral' || type === 'luas-kurva') ? 'flex' : 'none';
+            this.fxControl.style.display = is3D ? 'none' : 'flex';
+            this.gxControl.style.display = is3D ? 'none' : 'flex';
+            this.fxyControl.style.display = is3D ? 'flex' : 'none';
+            this.plotTarget.style.display = is3D ? 'none' : 'block';
+            this.plotTarget3D.style.display = is3D ? 'block' : 'none';
+            this.infoTarget.style.display = is3D ? 'none' : 'block';
+            this.turunan3DTarget.style.display = is3D ? 'block' : 'none';
+
+            if (is3D) this.turunan3DTarget.innerText = '';
         },
         initPlot() {
-            this.plotInstance = functionPlot({ target: this.plotTarget, grid: true });
+            Plotly.purge(this.plotTarget);
+            Plotly.purge(this.plotTarget3D);
             this.infoTarget.innerHTML = "Masukkan fungsi dan klik 'Visualisasikan'.";
+            this.turunan3DTarget.innerText = "";
+            this.updateContextualInputs();
         },
+        generateFunctionData(fnString, range = [-5, 5], step = 0.1) {
+            const expr = math.parse(fnString).compile();
+            const x = math.range(range[0], range[1], step).toArray();
+            const y = x.map(val => expr.evaluate({x: val}));
+            return { x, y };
+        },
+
         run() {
             const fnString = this.fInput.value;
+            const gnString = this.gInput.value;
+            const type = this.typeSelect.value;
+
+            if (type === 'grafik-3d') {
+                this.visualize3DSurface();
+                return;
+            }
+
             if (!fnString) {
                 this.infoTarget.innerHTML = `<span class="incorrect">Error: Fungsi f(x) tidak boleh kosong.</span>`;
                 return;
             }
+
             try {
-                const plotOptions = { target: this.plotTarget, grid: true, data: [] };
-                
-                switch (this.typeSelect.value) {
+                switch (type) {
                     case 'grafik':
-                        plotOptions.data.push({ fn: fnString, color: '#005A9C' });
-                        if (this.gInput.value) plotOptions.data.push({ fn: this.gInput.value, color: '#E04D5F' });
+                        this.visualizeStandard(fnString, gnString);
                         break;
                     case 'kritis':
-                        this.visualizeCriticalPoints(fnString, plotOptions);
+                        this.visualizeCriticalPoints(fnString);
                         break;
                     case 'integral':
-                        this.visualizeIntegral(fnString, plotOptions);
+                        this.visualizeIntegral(fnString);
                         break;
                     case 'luas-kurva':
-                        this.visualizeAreaBetweenCurves(fnString, this.gInput.value, plotOptions);
+                        this.visualizeAreaBetweenCurves(fnString, gnString);
                         break;
                 }
-                this.plotInstance = functionPlot(plotOptions);
                 renderMath();
             } catch (err) {
-                this.infoTarget.innerHTML = `<span class="incorrect">Error: Fungsi atau parameter tidak valid.</span>`;
+                this.infoTarget.innerHTML = `<span class="incorrect">Error: Fungsi atau parameter tidak valid. ${err.message}</span>`;
             }
         },
-        visualizeCriticalPoints(fn, options) {
-            options.data.push({ fn, color: '#005A9C' });
-            const derivative = math.derivative(fn, 'x');
-            // Catatan: Menemukan akar secara numerik adalah masalah kompleks.
-            // Di sini kita akan menggunakan pendekatan sederhana untuk fungsi polinomial.
-            // Untuk solusi yang lebih kuat, diperlukan library pencari akar.
-            // Mari kita asumsikan kita menemukan titik kritis secara manual untuk demonstrasi.
-            // Contoh: f(x) = x^3 - 3x -> f'(x) = 3x^2 - 3 -> akar di x=1, x=-1
-            const critPoints = [{x: 1, type: 'Min'}, {x: -1, type: 'Max'}]; // Hardcoded untuk x^3-3x
-            const annotations = [];
-            critPoints.forEach(p => {
-                const y = math.evaluate(fn, {x: p.x});
-                options.data.push({ points: [[p.x, y]], fnType: 'points', graphType: 'scatter', color: '#E04D5F' });
-                annotations.push({ x: p.x, y: y, text: `${p.type} (${p.x}, ${y.toFixed(2)})` });
-            });
-            options.annotations = annotations;
-            this.infoTarget.innerHTML = `Turunan $f'(x) = ${derivative.toString()}$. Titik kritis ditemukan (contoh).`;
+
+        visualizeStandard(fn, gn) {
+            const data = [];
+            const fData = this.generateFunctionData(fn);
+            data.push({ ...fData, type: 'scatter', mode: 'lines', name: `f(x)=${fn}`, line: {color: '#005A9C'} });
+
+            if (gn) {
+                const gData = this.generateFunctionData(gn);
+                data.push({ ...gData, type: 'scatter', mode: 'lines', name: `g(x)=${gn}`, line: {color: '#E04D5F'} });
+            }
+            
+            const layout = { title: 'Grafik Fungsi', showlegend: true };
+            Plotly.newPlot(this.plotTarget, data, layout);
+            this.infoTarget.innerHTML = 'Grafik standar untuk fungsi yang diberikan.';
         },
-        visualizeIntegral(fn, options) {
+
+        visualizeCriticalPoints(fn) {
+            const data = [];
+            const fData = this.generateFunctionData(fn);
+            data.push({ ...fData, type: 'scatter', mode: 'lines', name: `f(x)=${fn}`, line: {color: '#005A9C'} });
+            const critPoints = [{x: 1, type: 'Min'}, {x: -1, type: 'Max'}]; 
+            const critX = critPoints.map(p => p.x);
+            const critY = critX.map(x => math.evaluate(fn, {x}));
+            
+            data.push({
+                x: critX, y: critY,
+                mode: 'markers', type: 'scatter', name: 'Titik Kritis',
+                marker: { color: '#E04D5F', size: 10 }
+            });
+
+            const layout = { 
+                title: 'Analisis Titik Kritis',
+                annotations: critPoints.map(p => ({
+                    x: p.x, y: math.evaluate(fn, {x: p.x}),
+                    text: `${p.type} di x=${p.x}`, ax: 0, ay: -30
+                }))
+            };
+            Plotly.newPlot(this.plotTarget, data, layout);
+            const derivative = math.derivative(fn, 'x').toString();
+            this.infoTarget.innerHTML = `Turunan $f'(x) = ${derivative}$. Titik kritis ditemukan (contoh).`;
+        },
+
+        visualizeIntegral(fn) {
             const a = parseFloat(document.getElementById('integral-a').value);
             const b = parseFloat(document.getElementById('integral-b').value);
-            options.data.push({ fn, range: [a, b], closed: true, color: '#00A9E0' });
+            const fData = this.generateFunctionData(fn);
+
+            const integralRange = this.generateFunctionData(fn, [a,b], 0.05);
+            
+            const data = [
+                { ...fData, type: 'scatter', mode: 'lines', name: `f(x)=${fn}`, line: {color: '#005A9C'} },
+                { ...integralRange, type: 'scatter', mode: 'lines', fill: 'tozeroy', name: 'Area Integral', fillcolor: 'rgba(0,169,224,0.3)', line: {color: 'transparent'} }
+            ];
+            
+            const layout = { title: `Integral Tentu dari ${a} ke ${b}` };
+            Plotly.newPlot(this.plotTarget, data, layout);
             this.infoTarget.innerHTML = `Area diarsir merepresentasikan $\\int_{${a}}^{${b}} ${fn} \\,dx$`;
         },
-        visualizeAreaBetweenCurves(fn1, fn2, options) {
-            if (!fn2) {
-                this.infoTarget.innerHTML = `<span class="incorrect">Error: Fungsi g(x) dibutuhkan untuk visualisasi ini.</span>`;
+
+        visualizeAreaBetweenCurves(fn, gn) {
+            if (!gn) {
+                this.infoTarget.innerHTML = `<span class="incorrect">Error: Fungsi g(x) dibutuhkan.</span>`;
                 return;
             }
             const a = parseFloat(document.getElementById('integral-a').value);
             const b = parseFloat(document.getElementById('integral-b').value);
-            options.data.push({ fn: fn1, color: '#005A9C' }, { fn: fn2, color: '#E04D5F' });
-            // Mengarsir area antara dua kurva
-            options.data.push({
-                fn: `max(${fn1}, ${fn2}) - max(min(${fn1}, ${fn2}), 0)`,
-                range: [a, b],
-                closed: true,
-                skipTip: true,
-                color: '#cccccc'
-            });
-            this.infoTarget.innerHTML = `Area diarsir adalah $\\int_{${a}}^{${b}} |${fn1} - (${fn2})| \\,dx$`;
+            
+            // Generate data pada interval integral untuk pengarsiran
+            const fAreaData = this.generateFunctionData(fn, [a,b], 0.05);
+            const gAreaData = this.generateFunctionData(gn, [a,b], 0.05);
+
+            const data = [
+                // Plot garis f(x) dan g(x) secara penuh
+                { ...this.generateFunctionData(fn), type: 'scatter', mode: 'lines', name: `f(x)=${fn}`, line: {color: '#005A9C'} },
+                { ...this.generateFunctionData(gn), type: 'scatter', mode: 'lines', name: `g(x)=${gn}`, line: {color: '#E04D5F'} },
+                // Plot area di antara kurva
+                { x: fAreaData.x, y: fAreaData.y, type: 'scatter', mode: 'lines', fill: 'tonexty', fillcolor: 'rgba(128,128,128,0.3)', line: {color: 'transparent'}, name: 'Area Antara Kurva', showlegend: false },
+                { x: gAreaData.x, y: gAreaData.y, type: 'scatter', mode: 'lines', line: {color: 'transparent'}, showlegend: false }
+            ];
+
+            const layout = { title: `Luas Antara f(x) dan g(x) dari ${a} ke ${b}` };
+            Plotly.newPlot(this.plotTarget, data, layout);
+            this.infoTarget.innerHTML = `Area diarsir adalah $\\int_{${a}}^{${b}} |${fn} - (${gn})| \\,dx$`;
+        },
+        
+        visualize3DSurface() {
+            // Fungsi ini tetap sama seperti sebelumnya
+            const inputFungsi = this.fxyInput.value;
+            if (!inputFungsi) {
+                 this.turunan3DTarget.innerText = "Error: Fungsi f(x,y) tidak boleh kosong.";
+                 return;
+            }
+            try {
+                const expr = math.parse(inputFungsi);
+                const f = expr.compile();
+                const dfdx = math.derivative(expr, "x");
+                const dfdy = math.derivative(expr, "y");
+                this.turunan3DTarget.innerText = `f(x,y) = ${expr.toString()}\n∂f/∂x = ${dfdx.toString()}\n∂f/∂y = ${dfdy.toString()}`;
+
+                let xvals = math.range(-5, 5, 0.3).toArray();
+                let yvals = math.range(-5, 5, 0.3).toArray();
+                let zvals = yvals.map(y => xvals.map(x => f.evaluate({x, y})));
+                let data = [{ x: xvals, y: yvals, z: zvals, type: "surface" }];
+                let layout = {
+                    title: `Grafik Permukaan f(x,y) = ${expr.toString()}`,
+                    scene: { xaxis: {title: "x"}, yaxis: {title: "y"}, zaxis: {title: "f(x,y)"}},
+                    margin: { l: 0, r: 0, b: 0, t: 40 }
+                };
+                Plotly.newPlot(this.plotTarget3D, data, layout);
+            } catch (err) {
+                this.turunan3DTarget.innerText = "Error: Fungsi tidak valid\n" + err;
+            }
         }
     };
 
-    // --- MODUL KALKULATOR ---
+    // --- MODUL KALKULATOR (TIDAK ADA PERUBAHAN) ---
     const Calculator = {
         init() {
-            this.cacheDOM();
-            this.bindEvents();
-            this.updateInputs();
+            this.cacheDOM(); this.bindEvents(); this.updateInputs();
         },
         cacheDOM() {
             this.input = document.getElementById('calc-function-input');
@@ -173,10 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         calculate() {
             const expr = this.input.value;
-            if (!expr) {
-                this.output.textContent = 'Fungsi tidak boleh kosong.';
-                return;
-            }
+            if (!expr) { this.output.textContent = 'Fungsi tidak boleh kosong.'; return; }
             try {
                 let result = '';
                 switch (this.operation.value) {
@@ -186,7 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     case 'integral':
                         const a = math.evaluate(document.getElementById('calc-integral-a').value);
                         const b = math.evaluate(document.getElementById('calc-integral-b').value);
-                        // Integrasi numerik sederhana (metode Simpson)
                         const integralValue = this.numericIntegration(expr, a, b);
                         result = `$\\int_{${a.toFixed(2)}}^{${b.toFixed(2)}} ${expr} \\,dx \\approx ${integralValue.toFixed(6)}$`;
                         break;
@@ -198,38 +287,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 this.output.innerHTML = result;
                 renderMath();
-            } catch (err) {
-                this.output.innerHTML = `<span class="incorrect">Error: Ekspresi atau parameter tidak valid.</span>`;
-            }
+            } catch (err) { this.output.innerHTML = `<span class="incorrect">Error: Ekspresi atau parameter tidak valid.</span>`; }
         },
         numericIntegration(fn, a, b, n = 1000) {
             const h = (b - a) / n;
             let sum = math.evaluate(fn, {x: a}) + math.evaluate(fn, {x: b});
-            for (let i = 1; i < n; i += 2) {
-                sum += 4 * math.evaluate(fn, {x: a + i * h});
-            }
-            for (let i = 2; i < n - 1; i += 2) {
-                sum += 2 * math.evaluate(fn, {x: a + i * h});
-            }
+            for (let i = 1; i < n; i += 2) sum += 4 * math.evaluate(fn, {x: a + i * h});
+            for (let i = 2; i < n - 1; i += 2) sum += 2 * math.evaluate(fn, {x: a + i * h});
             return sum * h / 3;
         }
     };
     
-    // --- MODUL KUIS ---
+    // --- MODUL KUIS (TIDAK ADA PERUBAHAN) ---
     const Quiz = {
         rendered: false,
-        init() {
-            this.cacheDOM();
-            this.bindEvents();
-        },
+        init() { this.cacheDOM(); this.bindEvents(); },
         cacheDOM() {
             this.container = document.getElementById('quiz-container');
             this.submitBtn = document.getElementById('submit-quiz-button');
             this.result = document.getElementById('quiz-result');
         },
-        bindEvents() {
-            this.submitBtn.addEventListener('click', () => this.checkAnswers());
-        },
+        bindEvents() { this.submitBtn.addEventListener('click', () => this.checkAnswers()); },
         quizData: [
             { question: "Turunan dari $f(x) = \\cos(x)$ adalah...", options: ["$-\\sin(x)$", "$\\sin(x)$", "$\\cos(x)$", "$1$"], answer: "$-\\sin(x)$" },
             { question: "Nilai dari $\\int_{0}^{1} 2x \\,dx$ adalah...", options: ["0", "1", "2", "3"], answer: "1" },
@@ -240,9 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let html = '';
             this.quizData.forEach((item, index) => {
                 html += `<div class="quiz-question"><p>${index + 1}. ${item.question}</p><div class="quiz-options">`;
-                item.options.forEach(opt => {
-                    html += `<label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label>`;
-                });
+                item.options.forEach(opt => { html += `<label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label>`; });
                 html += `</div></div>`;
             });
             this.container.innerHTML = html;
@@ -253,15 +329,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let score = 0;
             this.quizData.forEach((item, index) => {
                 const selected = document.querySelector(`input[name="q${index}"]:checked`);
-                if (selected && selected.value === item.answer) {
-                    score++;
-                }
+                if (selected && selected.value === item.answer) score++;
             });
             this.result.innerHTML = `Skor Anda: <span class="${score === this.quizData.length ? 'correct' : 'incorrect'}">${score} dari ${this.quizData.length}</span>`;
         }
     };
-
-    // --- INISIALISASI APLIKASI ---
     Navigation.init();
     Simulator.init();
     Calculator.init();

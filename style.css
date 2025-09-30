@@ -302,3 +302,20 @@ button.secondary:hover {
     font-weight: bold;
     fill: #333;
 }
+
+/* Gaya untuk Grafik 3D */
+#plot-target-3d {
+    width: 100%;
+    height: 600px;
+    margin-top: 20px;
+}
+
+#turunan-3d {
+    white-space: pre-wrap;
+    background-color: #eef7ff;
+    padding: 15px;
+    border-left: 5px solid var(--primary-color);
+    border-radius: 5px;
+    margin-top: 15px;
+    font-family: 'Courier New', Courier, monospace;
+}

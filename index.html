@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <script src="js/plotly-3.1.1.min.js"></script>
 </head>
 <body>
 
@@ -15,31 +16,18 @@
         <div class="container">
             <h1>Kalkulus Interaktif Pro 🚀</h1>
             <nav>
-                <a href="#home" class="nav-link active">Beranda</a>
                 <a href="#materi" class="nav-link">Materi</a>
                 <a href="#simulasi" class="nav-link">Simulasi Visual</a>
                 <a href="#kalkulator" class="nav-link">Kalkulator</a>
                 <a href="#latihan" class="nav-link">Latihan Soal</a>
-                <a href="#tentang" class="nav-link">Tentang</a>
             </nav>
         </div>
     </header>
 
     <main class="container">
-        <section id="home" class="page active">
-            <h2>Selamat Datang di Versi Pro!</h2>
-            <p>Kini dengan fitur yang lebih canggih: materi aplikasi kalkulus, kalkulator lengkap, dan simulasi visual yang lebih interaktif untuk memperdalam pemahaman Anda.</p>
-            <div class="features-grid">
-                <div class="feature-card">Materi Aplikasi Kalkulus</div>
-                <div class="feature-card">Plot Dua Fungsi Sekaligus</div>
-                <div class="feature-card">Kalkulator Limit & Integral</div>
-                <div class="feature-card">Deteksi Titik Kritis Otomatis</div>
-            </div>
-        </section>
-
         <section id="materi" class="page">
             <h2>Materi Kalkulus</h2>
-            <article>
+            <article class="new-concept">
                 <h3>1. Limit, Turunan, dan Integral (Dasar)</h3>
                 <p>Dasar-dasar kalkulus mencakup studi tentang limit, turunan (laju perubahan), dan integral (akumulasi/luas). Konsep-konsep ini saling berhubungan dan menjadi fondasi untuk topik yang lebih lanjut.</p>
             </article>
@@ -55,18 +43,21 @@
                 <p>Ini secara efektif menghitung "luas kurva atas" dikurangi "luas kurva bawah".</p>
             </article>
         </section>
-
         <section id="simulasi" class="page">
             <h2>Simulasi Visual Tingkat Lanjut</h2>
             <p>Masukkan satu atau dua fungsi. Pilih visualisasi untuk melihat analisis grafik secara otomatis.</p>
             <div class="simulation-controls">
-                <div class="control-group">
+                <div class="control-group" id="fx-control">
                     <label for="sim-function-input">Fungsi $f(x) = $</label>
                     <input type="text" id="sim-function-input" value="x^3 - 3*x" placeholder="Fungsi utama">
                 </div>
-                <div class="control-group">
+                <div class="control-group" id="gx-control">
                     <label for="sim-function-g-input">Fungsi $g(x) = $</label>
                     <input type="text" id="sim-function-g-input" value="x" placeholder="Fungsi kedua (opsional)">
+                </div>
+                <div class="control-group" id="fxy-control">
+                    <label for="sim-function-fxy-input">Fungsi $f(x, y) = $</label>
+                    <input type="text" id="sim-function-fxy-input" value="x^2*y + 3*x*y^2" placeholder="Fungsi dua peubah">
                 </div>
                 <div class="control-group">
                     <label>Pilih Visualisasi:</label>
@@ -75,6 +66,7 @@
                         <option value="kritis">Analisis Titik Kritis (f(x))</option>
                         <option value="integral">Integral (Area f(x))</option>
                         <option value="luas-kurva">Luas Antara Dua Kurva</option>
+                        <option value="grafik-3d">Grafik Fungsi Dua Peubah</option>
                     </select>
                 </div>
                 <div id="integral-inputs" class="context-group">
@@ -88,10 +80,11 @@
             </div>
             <div class="simulation-output">
                 <div id="plot-target"></div>
+                <div id="plot-target-3d"></div>
                 <div id="visualization-info"></div>
+                 <pre id="turunan-3d"></pre>
             </div>
         </section>
-
         <section id="kalkulator" class="page">
             <h2>Kalkulator Kalkulus Lengkap</h2>
             <div class="calculator-form">
@@ -123,26 +116,19 @@
                 <p id="result-text">Hasil akan muncul di sini.</p>
             </div>
         </section>
-        
         <section id="latihan" class="page">
              <h2>Latihan Soal Interaktif</h2>
             <div id="quiz-container"></div>
             <button id="submit-quiz-button">Kumpulkan Jawaban</button>
             <div id="quiz-result"></div>
         </section>
-        <section id="tentang" class="page">
-            <h2>Tentang Project</h2>
-            <p>Project "Kalkulus Interaktif Pro" dikembangkan lebih lanjut untuk menyediakan alat bantu belajar kalkulus yang lebih mendalam, akurat, dan interaktif.</p>
-            <p><strong>Teknologi:</strong> HTML, CSS, JavaScript (ES6+), MathJax, function-plot.js, dan math.js.</p>
-        </section>
     </main>
-
-    <script src="https://unpkg.com/mathjs@11.8.0/lib/browser/math.js"></script>
-    <script src="https://unpkg.com/function-plot@1.22.9/dist/function-plot.js"></script>
+    <script src="js/math.js"></script>
+    <script src="js/function-plot.js"></script>
     <script>
         MathJax = { tex: { inlineMath: [['$', '$']] }, svg: { fontCache: 'global' } };
     </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script id="MathJax-script" async src="js/tex-svg.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
