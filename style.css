@@ -248,3 +248,57 @@ input[type="number"], select {
 .slider {
     width: 150px;
 }
+/* ... (semua gaya sebelumnya tetap ada) ... */
+
+/* Gaya untuk konsep baru di halaman materi */
+.new-concept {
+    border-left: 4px solid var(--secondary-color);
+    padding-left: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+/* Penyesuaian tata letak untuk kontrol simulasi & kalkulator */
+.simulation-controls, .calculator-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    align-items: end;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Input teks yang lebih fleksibel */
+input[type="text"], input[type="number"] {
+    width: 100%;
+    box-sizing: border-box; /* Penting untuk layout grid */
+}
+
+/* Tombol sekunder */
+button.secondary {
+    background-color: #6c757d;
+}
+button.secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Input kontekstual di kalkulator */
+#calc-extra-inputs .context-group {
+    display: none; /* Sembunyikan secara default */
+    gap: 10px;
+    align-items: center;
+}
+#calc-extra-inputs .context-group input {
+    width: 80px;
+}
+
+/* Gaya untuk penanda titik kritis di grafik */
+.crit-point-label {
+    font-size: 12px;
+    font-weight: bold;
+    fill: #333;
+}
