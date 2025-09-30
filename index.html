@@ -8,10 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-    <script src="js/plotly-3.1.1.min.js"></script>
 </head>
 <body>
-
     <header>
         <div class="container">
             <h1>Kalkulus Interaktif Pro 🚀</h1>
@@ -123,12 +121,12 @@
             <div id="quiz-result"></div>
         </section>
     </main>
+    <script src="js/plotly-3.1.1.min.js"></script>
     <script src="js/math.js"></script>
-    <script src="js/function-plot.js"></script>
+    <script id="MathJax-script" async src="js/tex-svg.js"></script>
+    <script src="js/script.js"></script>
     <script>
         MathJax = { tex: { inlineMath: [['$', '$']] }, svg: { fontCache: 'global' } };
     </script>
-    <script id="MathJax-script" async src="js/tex-svg.js"></script>
-    <script src="js/script.js"></script>
 </body>
 </html>
