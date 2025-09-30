@@ -92,6 +92,42 @@
             </div>
         </section>
 
+        <section id="simulasi" class="page">
+            <h2>Simulasi Visual Tingkat Lanjut</h2>
+            <p>Masukkan satu atau dua fungsi. Pilih visualisasi untuk melihat analisis grafik secara otomatis.</p>
+            <div class="simulation-controls">
+                <div class="control-group">
+                    <label for="sim-function-input">Fungsi $f(x) = $</label>
+                    <input type="text" id="sim-function-input" value="x^3 - 3*x" placeholder="Fungsi utama">
+                </div>
+                <div class="control-group">
+                    <label for="sim-function-g-input">Fungsi $g(x) = $</label>
+                    <input type="text" id="sim-function-g-input" value="x" placeholder="Fungsi kedua (opsional)">
+                </div>
+                <div class="control-group">
+                    <label>Pilih Visualisasi:</label>
+                    <select id="visualization-type">
+                        <option value="grafik" selected>Grafik Standar</option>
+                        <option value="kritis">Analisis Titik Kritis (f(x))</option>
+                        <option value="integral">Integral (Area f(x))</option>
+                        <option value="luas-kurva">Luas Antara Dua Kurva</option>
+                    </select>
+                </div>
+                <div id="integral-inputs" class="context-group">
+                    <label>Batas $a=$</label> <input type="number" id="integral-a" value="-2">
+                    <label>$b=$</label> <input type="number" id="integral-b" value="2">
+                </div>
+                <div>
+                    <button id="visualize-button">Visualisasikan</button>
+                    <button id="reset-view-button" class="secondary">Reset View</button>
+                </div>
+            </div>
+            <div class="simulation-output">
+                <div id="plot-target"></div>
+                <div id="visualization-info"></div>
+            </div>
+        </section>
+
         <section id="kalkulator" class="page">
             <h2>Kalkulator Kalkulus Lengkap</h2>
             <div class="calculator-form">
@@ -112,7 +148,7 @@
                         <label>Batas Bawah $a=$</label><input type="text" id="calc-integral-a" value="0">
                         <label>Batas Atas $b=$</label><input type="text" id="calc-integral-b" value="pi">
                     </div>
-                     <div id="calc-limit-inputs" class="context-group">
+                    <div id="calc-limit-inputs" class="context-group">
                         <label>Mendekati $x \to$</label><input type="text" id="calc-limit-c" value="0">
                     </div>
                 </div>
@@ -143,6 +179,6 @@
         MathJax = { tex: { inlineMath: [['$', '$']] }, svg: { fontCache: 'global' } };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-    <script src="script.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>
