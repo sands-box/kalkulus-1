@@ -1,61 +1,128 @@
 export const Quiz = {
-    rendered: false,
-    // Properti untuk menyimpan referensi ke fungsi renderMath
     renderMath: null,
-
-    // Terima objek 'config' untuk dependensi
-    init(config) {
-        this.renderMath = config.renderMath; // Simpan referensi
-        this.cacheDOM(); 
-        this.bindEvents(); 
-    },
-
-    cacheDOM() {
-        this.container = document.getElementById('quiz-container');
-        this.submitBtn = document.getElementById('submit-quiz-button');
-        this.result = document.getElementById('quiz-result');
-    },
-
-    bindEvents() { 
-        this.submitBtn.addEventListener('click', () => this.checkAnswers()); 
-    },
-
-    quizData: [
-        { question: "Turunan dari $f(x) = \\cos(x)$ adalah...", options: ["$-\\sin(x)$", "$\\sin(x)$", "$\\cos(x)$", "$1$"], answer: "$-\\sin(x)$" },
-        { question: "Nilai dari $\\int_{0}^{1} 2x \\,dx$ adalah...", options: ["0", "1", "2", "3"], answer: "1" },
-        { question: "Titik minimum lokal dari $f(x) = x^2 - 4x + 5$ terjadi di $x = $...", options: ["1", "2", "3", "4"], answer: "2" }
+    progressModule: null,
+    container: null,
+    submitButton: null,
+    resultContainer: null,
+    currentQuestions: [],
+    userAnswers: {},
+    questionBank: [
+        {
+            question: "Tentukan turunan dari fungsi $f(x) = 3x^4 - 2x^2 + 5$.",
+            options: [
+                "$f'(x) = 12x^3 - 4x$",
+                "$f'(x) = 12x^4 - 4x^2$",
+                "$f'(x) = 3x^3 - 2x$",
+                "$f'(x) = 4x^3 - 2x$"
+            ],
+            answer: 0
+        },
+        {
+            question: "Hitunglah nilai limit berikut: $\\lim_{x \\to 2} (x^2 + 3x - 1)$.",
+            options: [
+                "8",
+                "9",
+                "10",
+                "11"
+            ],
+            answer: 1 
+        },
+        {
+            question: "Integral tentu dari $\\int_{0}^{1} 2x \\,dx$ adalah...",
+            options: [
+                "0",
+                "1",
+                "2",
+                "1/2"
+            ],
+            answer: 1
+        },
+        {
+            question: "Jika $f'(c) = 0$, maka $x=c$ adalah kandidat untuk...",
+            options: [
+                "Titik potong sumbu-y",
+                "Asimtot tegak",
+                "Titik belok",
+                "Titik maksimum atau minimum lokal"
+            ],
+            answer: 3
+        }
     ],
 
-    render() {
-        // Hanya render soal jika belum pernah di-render, untuk mencegah duplikasi
-        if (this.rendered) return;
+    init(config) {
+        this.renderMath = config.renderMath;
+        this.progressModule = config.progressModule;
+        this.container = document.getElementById('quiz-container');
+        this.submitButton = document.getElementById('submit-quiz-button');
+        this.resultContainer = document.getElementById('quiz-result');
 
-        let html = '';
-        this.quizData.forEach((item, index) => {
-            // Perbaikan kecil: class="quiz-question" bukan class.quiz-question
-            html += `<div class="quiz-question"><p>${index + 1}. ${item.question}</p><div class="quiz-options">`;
-            item.options.forEach(opt => { 
-                html += `<label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label>`; 
-            });
-            html += `</div></div>`;
+        if (!this.container || !this.submitButton || !this.resultContainer) {
+            console.error("Elemen kuis tidak ditemukan di halaman!");
+            return;
+        }
+        
+        this.submitButton.addEventListener('click', () => this.checkAnswers());
+        this.loadQuestions();
+    },
+
+    loadQuestions() {
+        this.currentQuestions = this.questionBank;
+        this.userAnswers = {};
+        this.container.innerHTML = '';
+        this.resultContainer.innerHTML = '';
+
+        this.currentQuestions.forEach((q, index) => {
+            const questionElement = document.createElement('article');
+            questionElement.className = 'quiz-question';
+
+            let optionsHTML = q.options.map((option, optionIndex) => `
+                <label class="quiz-option">
+                    <input type="radio" name="question-${index}" value="${optionIndex}">
+                    <span>${option}</span>
+                </label>
+            `).join('');
+
+            questionElement.innerHTML = `
+                <h4>Soal ${index + 1}:</h4>
+                <p>${q.question}</p>
+                <div class="quiz-options">${optionsHTML}</div>
+            `;
+            this.container.appendChild(questionElement);
         });
-        this.container.innerHTML = html;
-        this.rendered = true; // Tandai bahwa kuis sudah di-render
-
-        // Panggil renderMath menggunakan referensi yang disimpan
+        
         if (this.renderMath) {
             this.renderMath();
         }
     },
 
     checkAnswers() {
-        let score = 0;
-        this.quizData.forEach((item, index) => {
-            const selected = document.querySelector(`input[name="q${index}"]:checked`);
-            if (selected && selected.value === item.answer) {
-                score++;
+        let correctAnswers = 0;
+
+        this.currentQuestions.forEach((q, index) => {
+            const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+            if (selectedOption) {
+                this.userAnswers[index] = parseInt(selectedOption.value);
             }
         });
-        this.result.innerHTML = `Skor Anda: <span class="${score === this.quizData.length ? 'correct' : 'incorrect'}">${score} dari ${this.quizData.length}</span>`;
+
+        this.currentQuestions.forEach((q, index) => {
+            if (this.userAnswers[index] === q.answer) {
+                correctAnswers++;
+                if (this.progressModule) {
+                    this.progressModule.addXp(this.progressModule.config.xpForCorrectAnswer);
+                }
+            }
+        });
+        
+        const score = (correctAnswers / this.currentQuestions.length) * 100;
+
+        this.resultContainer.innerHTML = `
+            <h3>Hasil Kuis</h3>
+            <p>Anda menjawab benar <strong>${correctAnswers}</strong> dari <strong>${this.currentQuestions.length}</strong> soal.</p>
+            <p>Skor Akhir: <strong>${score.toFixed(1)}%</strong></p>
+            <button id="retry-quiz-button">Coba Lagi</button>
+        `;
+
+        document.getElementById('retry-quiz-button').addEventListener('click', () => this.loadQuestions());
     }
 };

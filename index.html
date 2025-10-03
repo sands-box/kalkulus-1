@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF--8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalkulus Interaktif Pro</title>
     <link rel="stylesheet" href="style.css">
@@ -19,6 +19,10 @@
                 <a href="#kalkulator" class="nav-link">Kalkulator</a>
                 <a href="#latihan" class="nav-link">Latihan Soal</a>
             </nav>
+            <div class="user-stats">
+                <span>Level: <span id="user-level">1</span></span>
+                <span>XP: <span id="user-xp">0</span></span>
+            </div>
         </div>
     </header>
 
@@ -46,6 +50,10 @@
             <h2>Simulasi Visual Tingkat Lanjut</h2>
             <p>Masukkan satu atau dua fungsi. Pilih visualisasi untuk melihat analisis grafik secara otomatis.</p>
             <div class="simulation-controls">
+                <div class="control-group" id="fxy-control">
+                    <label for="sim-function-fxy-input">Fungsi $f(x, y) = $</label>
+                    <input type="text" id="sim-function-fxy-input" value="sin(x) * cos(y)" placeholder="Fungsi dua peubah">
+                </div>
                 <div class="control-group" id="fx-control">
                     <label for="sim-function-input">Fungsi $f(x) = $</label>
                     <input type="text" id="sim-function-input" value="x^3 - 3*x" placeholder="Fungsi utama">
@@ -54,19 +62,19 @@
                     <label for="sim-function-g-input">Fungsi $g(x) = $</label>
                     <input type="text" id="sim-function-g-input" value="x" placeholder="Fungsi kedua (opsional)">
                 </div>
-                <div class="control-group" id="fxy-control">
-                    <label for="sim-function-fxy-input">Fungsi $f(x, y) = $</label>
-                    <input type="text" id="sim-function-fxy-input" value="x^2*y + 3*x*y^2" placeholder="Fungsi dua peubah">
-                </div>
                 <div class="control-group">
                     <label>Pilih Visualisasi:</label>
                     <select id="visualization-type">
-                        <option value="grafik-3d">Grafik Fungsi Dua Peubah</option>
-                        <option value="grafik" selected>Grafik Standar</option>
+                        <option value="grafik-3d" selected>Grafik Fungsi Dua Peubah</option>
+                        <option value="grafik">Grafik Standar</option>
                         <option value="kritis">Analisis Titik Kritis (f(x))</option>
                         <option value="integral">Integral (Area f(x))</option>
                         <option value="luas-kurva">Luas Antara Dua Kurva</option>
                     </select>
+                </div>
+                <div class="control-group form-check" style="display: none;">
+                    <input type="checkbox" id="derivative-tracer-toggle">
+                    <label for="derivative-tracer-toggle">Tampilkan Pelacak Turunan</label>
                 </div>
                 <div id="integral-inputs" class="context-group">
                     <label>Batas $a=$</label> <input type="number" id="integral-a" value="-2">
@@ -95,22 +103,22 @@
                 <div class="control-group">
                     <label>Pilih Operasi:</label>
                     <select id="calc-operation">
+                        <option value="turunan-parsial" selected>Turunan Parsial f(x,y)</option>
                         <option value="turunan">Turunan Biasa f(x)</option>
-                        <option value="turunan-parsial">Turunan Parsial f(x,y)</option>
                         <option value="integral">Integral Tentu</option>
                         <option value="limit">Limit</option>
                     </select>
                 </div>
                 <div id="calc-extra-inputs">
+                     <div id="calc-partial-inputs" class="context-group">
+                        <label>Urutan Turunan:</label><input type="text" id="calc-partial-order" placeholder="xxy, yx, ...">
+                    </div>
                     <div id="calc-integral-inputs" class="context-group">
                         <label>Batas Bawah $a=$</label><input type="text" id="calc-integral-a" value="0">
                         <label>Batas Atas $b=$</label><input type="text" id="calc-integral-b" value="pi">
                     </div>
                     <div id="calc-limit-inputs" class="context-group">
                         <label>Mendekati $x \to$</label><input type="text" id="calc-limit-c" value="0">
-                    </div>
-                    <div id="calc-partial-inputs" class="context-group">
-                        <label>Urutan Turunan:</label><input type="text" id="calc-partial-order" placeholder="xxy, yx, ...">
                     </div>
                 </div>
                 <button id="calculate-button">Hitung</button>
@@ -129,13 +137,14 @@
         </section>
     </main>
 
+    <footer>
+        <p>&copy; 2025 Kalkulus Interaktif Pro</p>
+    </footer>
+
     <script src="js/tools/plotly-3.1.1.min.js"></script>
     <script src="js/tools/math.js"></script>
-
     <script type="module" src="js/script.js"></script>
-
     <script id="MathJax-script" async src="js/tools/tex-svg.js"></script>
-
     <script>
         MathJax = { tex: { inlineMath: [['$', '$']] }, svg: { fontCache: 'global' } };
     </script>

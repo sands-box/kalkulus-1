@@ -318,3 +318,26 @@ button.secondary:hover {
     margin-top: 15px;
     font-family: 'Courier New', Courier, monospace;
 }
+
+/* User Stats */
+.user-stats {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+}
+.user-stats span {
+    margin: 0 10px;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    background: #333;
+    color: #fff;
+}

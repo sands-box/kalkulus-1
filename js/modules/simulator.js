@@ -1,14 +1,11 @@
 export const Simulator = {
-    // Properti untuk menyimpan referensi ke fungsi renderMath
     renderMath: null,
 
-    // Terima objek 'config' untuk dependensi
     init(config) {
-        this.renderMath = config.renderMath; // Simpan referensi
+        this.renderMath = config.renderMath;
         this.cacheDOM();
         this.bindEvents();
-        this.updateContextualInputs();
-        this.initPlot(); // Panggil initPlot saat pertama kali dimuat
+        this.initPlot();
     },
 
     cacheDOM() {
@@ -28,7 +25,6 @@ export const Simulator = {
         this.fxyControl = document.getElementById('fxy-control');
     },
 
-    // Hanya ada SATU fungsi bindEvents sekarang
     bindEvents() {
         this.visualizeBtn.addEventListener('click', () => this.run());
         this.resetBtn.addEventListener('click', () => this.initPlot());
@@ -41,22 +37,24 @@ export const Simulator = {
         
         this.integralInputs.style.display = (type === 'integral' || type === 'luas-kurva') ? 'flex' : 'none';
         this.fxControl.style.display = is3D ? 'none' : 'flex';
-        this.gxControl.style.display = (type === 'luas-kurva') ? 'flex' : 'none'; // Hanya tampilkan g(x) saat dibutuhkan
+        // PERBAIKAN: Tampilkan g(x) untuk grafik standar dan luas kurva
+        this.gxControl.style.display = (type === 'grafik' || type === 'luas-kurva') ? 'flex' : 'none';
         this.fxyControl.style.display = is3D ? 'flex' : 'none';
         this.plotTarget.style.display = is3D ? 'none' : 'block';
         this.plotTarget3D.style.display = is3D ? 'block' : 'none';
         this.infoTarget.style.display = is3D ? 'none' : 'block';
         this.turunan3DTarget.style.display = is3D ? 'block' : 'none';
 
-        if (is3D) this.turunan3DTarget.innerText = '';
+        if (is3D) {
+            this.turunan3DTarget.innerText = '';
+        }
     },
 
     initPlot() {
-        Plotly.purge(this.plotTarget);
-        Plotly.purge(this.plotTarget3D);
         this.infoTarget.innerHTML = "Masukkan fungsi dan klik 'Visualisasikan'.";
         this.turunan3DTarget.innerText = "";
         this.updateContextualInputs();
+        this.run();
     },
 
     generateFunctionData(fnString, range = [-10, 10], step = 0.1) {
@@ -83,23 +81,12 @@ export const Simulator = {
 
         try {
             switch (type) {
-                case 'grafik':
-                    this.visualizeStandard(fnString, gnString);
-                    break;
-                case 'kritis':
-                    this.visualizeCriticalPoints(fnString);
-                    break;
-                case 'integral':
-                    this.visualizeIntegral(fnString);
-                    break;
-                case 'luas-kurva':
-                    this.visualizeAreaBetweenCurves(fnString, gnString);
-                    break;
+                case 'grafik': this.visualizeStandard(fnString, gnString); break;
+                case 'kritis': this.visualizeCriticalPoints(fnString); break;
+                case 'integral': this.visualizeIntegral(fnString); break;
+                case 'luas-kurva': this.visualizeAreaBetweenCurves(fnString, gnString); break;
             }
-            // Panggil renderMath setelah plot berhasil
-            if (this.renderMath) {
-                this.renderMath();
-            }
+            if (this.renderMath) this.renderMath();
         } catch (err) {
             this.infoTarget.innerHTML = `<span class="incorrect">Error: Fungsi atau parameter tidak valid. ${err.message}</span>`;
         }
@@ -110,13 +97,14 @@ export const Simulator = {
         const fData = this.generateFunctionData(fn);
         data.push({ ...fData, type: 'scatter', mode: 'lines', name: `f(x)=${fn}`, line: {color: '#005A9C'} });
 
+        // Hanya plot g(x) jika inputnya tidak kosong
         if (gn) {
             const gData = this.generateFunctionData(gn);
             data.push({ ...gData, type: 'scatter', mode: 'lines', name: `g(x)=${gn}`, line: {color: '#E04D5F'} });
         }
-        const layout = { 
-            title: 'Grafik Fungsi', 
-            showlegend: true,
+        
+        const layout = {
+            title: 'Grafik Fungsi', showlegend: true,
             xaxis: { range: [-10, 10], gridcolor: '#eee' },
             yaxis: { range: [-10, 10], gridcolor: '#eee' },
             plot_bgcolor: '#f9f9f9'
@@ -125,41 +113,92 @@ export const Simulator = {
         this.infoTarget.innerHTML = 'Grafik standar untuk fungsi yang diberikan.';
     },
 
+    visualize3DSurface() {
+        const inputFungsi = this.fxyInput.value;
+        if (!inputFungsi) {
+            this.turunan3DTarget.innerText = "Error: Fungsi f(x,y) tidak boleh kosong.";
+            return;
+        }
+        try {
+            const expr = math.parse(inputFungsi);
+            const f = expr.compile();
+            const dfdx = math.derivative(expr, "x");
+            const dfdy = math.derivative(expr, "y");
+            this.turunan3DTarget.innerText = `f(x,y) = ${expr.toString()}\n∂f/∂x = ${dfdx.toString()}\n∂f/∂y = ${dfdy.toString()}`;
+
+            let xvals = math.range(-5, 5, 0.3).toArray();
+            let yvals = math.range(-5, 5, 0.3).toArray();
+            let zvals = yvals.map(y => xvals.map(x => f.evaluate({x, y})));
+            let data = [{ x: xvals, y: yvals, z: zvals, type: "surface" }];
+            let layout = {
+                title: `Grafik Permukaan f(x,y) = ${expr.toString()}`,
+                scene: { xaxis: {title: "x"}, yaxis: {title: "y"}, zaxis: {title: "f(x,y)"}},
+                margin: { l: 0, r: 0, b: 0, t: 40 }
+            };
+            Plotly.newPlot(this.plotTarget3D, data, layout);
+        } catch (err) {
+            this.turunan3DTarget.innerText = "Error: Fungsi tidak valid\n" + err;
+        }
+    },
+    
     visualizeCriticalPoints(fn) {
         const data = [];
         const fData = this.generateFunctionData(fn);
         data.push({ ...fData, type: 'scatter', mode: 'lines', name: `f(x)=${fn}`, line: {color: '#005A9C'} });
         
-        // Contoh titik kritis statis. Untuk implementasi nyata, dibutuhkan metode numerik.
-        const critPoints = [{x: 1, type: 'Min'}, {x: -1, type: 'Max'}]; 
-        const critX = critPoints.map(p => p.x);
-        const critY = critX.map(x => math.evaluate(fn, {x}));
-        
-        data.push({
-            x: critX, y: critY,
-            mode: 'markers', type: 'scatter', name: 'Titik Kritis',
-            marker: { color: '#E04D5F', size: 10 }
-        });
-
         const layout = { 
             title: 'Analisis Titik Kritis',
-            annotations: critPoints.map(p => ({
-                x: p.x, y: math.evaluate(fn, {x: p.x}),
-                text: `${p.type} di x=${p.x}`, ax: 0, ay: -30
-            })),
             xaxis: { range: [-10, 10] }, 
             yaxis: { range: [-10, 10] }  
         };
+        
+        try {
+            const derivative = math.derivative(fn, 'x');
+            const derivativeString = derivative.toString();
+            this.infoTarget.innerHTML = `Mencari titik kritis untuk $f'(x) = ${derivativeString}$...`;
+
+            const critX = [];
+            for (let x = -10; x <= 10; x += 0.01) {
+                if (Math.abs(derivative.evaluate({x})) < 0.01) {
+                    if (critX.every(p => Math.abs(p - x) > 0.5)) {
+                        critX.push(x);
+                    }
+                }
+            }
+            
+            if (critX.length > 0) {
+                const critY = critX.map(xVal => math.evaluate(fn, {x: xVal}));
+                data.push({
+                    x: critX, y: critY,
+                    mode: 'markers', type: 'scatter', name: 'Titik Kritis',
+                    marker: { color: '#E04D5F', size: 10 }
+                });
+                layout.annotations = critX.map((xVal, i) => ({
+                    x: xVal, y: critY[i],
+                    text: `Kritis di x≈${xVal.toFixed(2)}`,
+                    ax: 0, ay: -30
+                }));
+                this.infoTarget.innerHTML = `Turunan $f'(x) = ${derivativeString}$. Ditemukan ${critX.length} kandidat titik kritis.`;
+            } else {
+                this.infoTarget.innerHTML = `Turunan $f'(x) = ${derivativeString}$. Tidak ada titik kritis yang ditemukan di rentang [-10, 10].`;
+            }
+
+        } catch (e) {
+            this.infoTarget.innerHTML = `Tidak dapat menganalisis titik kritis untuk fungsi ini secara otomatis.`;
+        }
+
         Plotly.newPlot(this.plotTarget, data, layout);
-        const derivative = math.derivative(fn, 'x').toString();
-        this.infoTarget.innerHTML = `Turunan $f'(x) = ${derivative}$. Titik kritis ditemukan (contoh).`;
     },
 
     visualizeIntegral(fn) {
         const a = parseFloat(document.getElementById('integral-a').value);
         const b = parseFloat(document.getElementById('integral-b').value);
+        if (isNaN(a) || isNaN(b)) {
+            this.infoTarget.innerHTML = `<span class="incorrect">Error: Batas integral a dan b harus angka.</span>`;
+            return;
+        }
+        
         const fData = this.generateFunctionData(fn);
-
         const integralRange = this.generateFunctionData(fn, [a,b], 0.05);
         
         const data = [
@@ -183,33 +222,29 @@ export const Simulator = {
         }
         const a = parseFloat(document.getElementById('integral-a').value);
         const b = parseFloat(document.getElementById('integral-b').value);
+        if (isNaN(a) || isNaN(b)) {
+            this.infoTarget.innerHTML = `<span class="incorrect">Error: Batas integral a dan b harus angka.</span>`;
+            return;
+        }
         
-        const fAreaData = this.generateFunctionData(fn, [a,b], 0.05);
-        const gAreaData = this.generateFunctionData(gn, [a,b], 0.05);
-
         const data = [
             { ...this.generateFunctionData(fn), type: 'scatter', mode: 'lines', name: `f(x)=${fn}`, line: {color: '#005A9C'} },
-            { ...this.generateFunctionData(gn), type: 'scatter', mode: 'lines', name: `g(x)=${gn}`, line: {color: '#E04D5F'} },
-            { 
-                x: fAreaData.x, 
-                y: fAreaData.y, 
-                type: 'scatter', 
-                mode: 'lines', 
-                fill: 'tonexty', // Mengisi area ke plot berikutnya (g(x))
-                fillcolor: 'rgba(128,128,128,0.3)', 
-                line: {color: 'transparent'}, 
-                name: 'Area Antara Kurva', 
-                showlegend: false 
-            },
-            { 
-                x: gAreaData.x, 
-                y: gAreaData.y, 
-                type: 'scatter', 
-                mode: 'lines', 
-                line: {color: 'transparent'}, 
-                showlegend: false 
-            }
+            { ...this.generateFunctionData(gn), type: 'scatter', mode: 'lines', name: `g(x)=${gn}`, line: {color: '#E04D5F'} }
         ];
+        
+        const fillX = math.range(a, b, 0.05).toArray();
+        const fillY_f = fillX.map(x => math.evaluate(fn, {x}));
+        const fillY_g = fillX.map(x => math.evaluate(gn, {x}));
+        
+        data.push({
+            x: [...fillX, ...fillX.slice().reverse()],
+            y: [...fillY_f, ...fillY_g.slice().reverse()],
+            fill: 'toself',
+            fillcolor: 'rgba(128,128,128,0.3)',
+            line: { color: 'transparent' },
+            name: 'Area',
+            showlegend: false
+        });
 
         const layout = { 
             title: `Luas Antara f(x) dan g(x) dari ${a} ke ${b}`,
@@ -218,33 +253,5 @@ export const Simulator = {
         };
         Plotly.newPlot(this.plotTarget, data, layout);
         this.infoTarget.innerHTML = `Area diarsir adalah $\\int_{${a}}^{${b}} |${fn} - (${gn})| \\,dx$`;
-    },
-    
-    visualize3DSurface() {
-        const inputFungsi = this.fxyInput.value;
-        if (!inputFungsi) {
-                this.turunan3DTarget.innerText = "Error: Fungsi f(x,y) tidak boleh kosong.";
-                return;
-        }
-        try {
-            const expr = math.parse(inputFungsi);
-            const f = expr.compile();
-            const dfdx = math.derivative(expr, "x");
-            const dfdy = math.derivative(expr, "y");
-            this.turunan3DTarget.innerText = `f(x,y) = ${expr.toString()}\n∂f/∂x = ${dfdx.toString()}\n∂f/∂y = ${dfdy.toString()}`;
-
-            let xvals = math.range(-5, 5, 0.3).toArray();
-            let yvals = math.range(-5, 5, 0.3).toArray();
-            let zvals = yvals.map(y => xvals.map(x => f.evaluate({x, y})));
-            let data = [{ x: xvals, y: yvals, z: zvals, type: "surface" }];
-            let layout = {
-                title: `Grafik Permukaan f(x,y) = ${expr.toString()}`,
-                scene: { xaxis: {title: "x"}, yaxis: {title: "y"}, zaxis: {title: "f(x,y)"}},
-                margin: { l: 0, r: 0, b: 0, t: 40 }
-            };
-            Plotly.newPlot(this.plotTarget3D, data, layout);
-        } catch (err) {
-            this.turunan3DTarget.innerText = "Error: Fungsi tidak valid\n" + err;
-        }
     }
 };

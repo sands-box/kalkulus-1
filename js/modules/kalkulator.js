@@ -61,10 +61,21 @@ export const Calculator = {
             let result = '';
             switch (this.operation.value) {
                 case 'turunan':
-                    const firstDerivative = math.derivative(expr, 'x');
-                    const secondDerivative = math.derivative(firstDerivative, 'x');
-                    result = `Turunan dari $f(x)=${expr}$ adalah: $$f'(x) = ${firstDerivative.toString()}$$
-                    Turunan kedua adalah: $$f''(x) = ${secondDerivative.toString()}$$`;
+                    const Derivative1 = math.derivative(expr, 'x');
+                    const Derivative2 = math.derivative(Derivative1, 'x');
+                    const Derivative3 = math.derivative(Derivative2, 'x');
+                    const Derivative4 = math.derivative(Derivative3, 'x');
+                    const Derivative5 = math.derivative(Derivative4, 'x');
+                    const Derivative6 = math.derivative(Derivative5, 'x');
+                    const Derivative7 = math.derivative(Derivative6, 'x');
+                    const Derivative8 = math.derivative(Derivative7, 'x');
+                    result = `Turunan dari $f(x)=${expr}$ adalah: $$f'(x) = ${Derivative1.toString()}$$
+                    Turunan ketiga adalah: $$f''(x) = ${Derivative2.toString()}$$
+                    Turunan keempat adalah: $$f'''(x) = ${Derivative3.toString()}$$
+                    Turunan kelima adalah: $$f''''(x) = ${Derivative4.toString()}$$
+                    Turunan keenam adalah: $$f'''''(x) = ${Derivative5.toString()}$$
+                    Turunan ketujuh adalah: $$f''''''(x) = ${Derivative6.toString()}$$
+                    Turunan kedelapan adalah: $$f'''''''(x) = ${Derivative7.toString()}$$`;
                     break;
                 
                 case 'turunan-parsial':
